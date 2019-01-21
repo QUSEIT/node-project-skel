@@ -1,0 +1,34 @@
+{
+  "name": "api-base",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js",
+    "start:docker": "./docker/development/run.sh api-base",
+    "build:docker": "./docker/development/build.sh api-base",
+    "stop:docker": "./docker/development/stop.sh api-base",
+    "start:refs": "./docker/development/start-ref-services.sh"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.15.2",
+    "dotenv": "^6.1.0",
+    "ejs": "^2.6.1",
+    "express": "~4.16.0",
+    "express-rate-limit": "^2.11.0",
+    "express-session": "^1.15.6",
+    "fastest-validator": "0.6.12",
+    "jsonwebtoken": "^8.4.0",
+    "moment": "^2.23.0",
+    "mongoose": "^5.3.12",
+    "morgan": "^1.9.1",
+    "promise-queue": "^2.2.3",
+    "request": "^2.75.0",
+    "send-seekable": "^1.0.4",
+    "stack-trace": "0.0.10",
+    "uuid": "^3.3.2",
+    "winston": "^2.4.2",
+    "winston-daily-rotate-file": "^3.3.3"
+  }
+}
