@@ -1,29 +1,29 @@
-## develop with docker
+### 使用docker开发
 
-### 0 setup required variable
+#### 0 设置环境变量
 `cp docker/development/.env.docker .env`
 
-### 1 build docker container
+#### 1 编译docker容器并运行
 `npm run build:docker` 
 
-### 2 restart if codes changed
+#### 2 重启容器服务
 `npm run start:docker`
 
-### 3 stop all docker container
+#### 3 停止容器服务
 `npm run stop:docker`
 
-## develop without docker
+### 本地环境开发
 
-### 0 setup required variable
+#### 0 设置环境变量
 `cp .env.default .env`
 
-### 1 start reference services
+#### 1 启动依赖的服务
 
-#### start with docker 
+- 使用docker启动 
 `npm run start:refs`
 
-#### start services manually 
-1. installl mongodb and start it
+- 手动安装服务并启动
+安装mongodb服务
 
-### 3 start api service
+#### 2 启动项目
 `npm start`
