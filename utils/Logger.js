@@ -1,15 +1,8 @@
-const morgan = require('morgan');
+
 const winston = require('winston');
-const path = require('path');
 const moment = require('moment');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const fs = require('fs');
-
-const LOGS_DIR = process.env.LOG_PATH || path.join(__dirname, '../logs');
-
-if (!fs.existsSync(LOGS_DIR)) {
-    fs.mkdirSync(LOGS_DIR, { recursive: true });
-}
 
 // file size limit 10M
 const LOGGER_COMMON_CONFIG = {
@@ -23,22 +16,60 @@ const LOGGER_COMMON_CONFIG = {
     handleExceptions: true,
 };
 
-function generateLogger(level) {
+class Logger {
+
+    constructor(dir) {
+        createDirIfNotExist(dir);
+        this.error_logger = generateLogger("error", dir);
+        this.debug_logger = generateLogger("debug", dir);
+        this.info_logger = generateLogger("info", dir);
+        this.warn_logger = generateLogger("warn", dir);
+
+        this.info = this.info.bind(this);
+        this.debug = this.debug.bind(this);
+        this.warn = this.warn.bind(this);
+        this.error = this.error.bind(this);
+    }
+
+    info(msg, args) {
+        this.info_logger.info(msg, args);
+    }
+    warn(msg, args) {
+        this.warn_logger.warn(msg, args);
+    }
+    debug(msg, args) {
+        this.debug_logger.debug(msg, args);
+    }
+    error(msg, args) {
+        this.error_logger.error(msg, args);
+    }
+
+}
+
+function createDirIfNotExist(dir) {
+    if (dir && !fs.existsSync(dir)) {
+        fs.mkdirSync(dir, {
+            recursive: true
+        });
+    }
+}
+
+function generateLogger(level, dir) {
     let transport;
-    
-    if(process.env['NODE_ENV'] === 'development'){
+    // output the log to file if provider dir
+    if (dir) {
+        transport = new DailyRotateFile({
+            name: level,
+            level: level,
+            filename: `${dir}/${level}-%DATE%.log`,
+            ...LOGGER_COMMON_CONFIG,
+        });
+    } else {
         transport = new winston.transports.Console({
             name: level,
             level: level,
             ...LOGGER_COMMON_CONFIG,
             colorize: true,
-        });
-    }else{
-        transport = new DailyRotateFile({
-            name: level,
-            level: level,
-            filename: `${LOGS_DIR}/${level}-%DATE%.log`,
-            ...LOGGER_COMMON_CONFIG,
         });
     }
     const config = {
@@ -51,45 +82,4 @@ function generateLogger(level) {
     return new winston.Logger(config);
 }
 
-const error_logger = generateLogger("error");
-const debug_logger = generateLogger("debug");
-const info_logger = generateLogger("info");
-const warn_logger = generateLogger("warn");
-
-const Logger = {
-
-    initRequestLogger: function (app) {
-        app.use(morgan(function (tokens, req, res) {
-            const method = req.method;
-            const url = req.originalUrl;
-            const request_params = JSON.stringify(req.body);
-            return [
-                method,
-                url,
-                "params:",
-                request_params,
-                tokens.status(req, res),
-                tokens['response-time'](req, res), 'ms'
-            ].join(' ')
-        }, {
-            stream: {
-                write: function (message) {
-                    info_logger.info(message.trim())
-                }
-            }
-        }));
-    },
-    info: function (msg, args) {
-        info_logger.info(msg, args);
-    },
-    warn: function (msg, args) {
-        warn_logger.warn(msg, args);
-    },
-    debug: function (msg, args) {
-        debug_logger.debug(msg, args);
-    },
-    error: function (msg, args) {
-        error_logger.error(msg, args);
-    },
-};
 module.exports = Logger;

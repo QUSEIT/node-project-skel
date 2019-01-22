@@ -1,4 +1,8 @@
 
+/**
+ * 
+ * @param {*} user mongo model
+ */
 function respondSingle(user) {
   return {
     email: user.email,

@@ -1,4 +1,5 @@
 const BaseDelegator = require("./BaseDelegator");
+const Constant = require("../constant");
 
 class UserDelegator extends BaseDelegator {
   constructor(props) {
@@ -11,13 +12,14 @@ class UserDelegator extends BaseDelegator {
     this.generateRefreshToken = this.generateRefreshToken.bind(this);
     this.updateRefreshToken = this.updateRefreshToken.bind(this);
     this.updateUserByEmail = this.updateUserByEmail.bind(this);
+    this.comparePassword = this.comparePassword.bind(this);
   }
 
   createUser(email, password, username) {
 
     return this.db.User.create({
       email,
-      password: this.CryptUtil.hashString(password),
+      password: this.utils.CryptUtil.hashString(password),
       username,
     })
   }
@@ -31,20 +33,20 @@ class UserDelegator extends BaseDelegator {
   generateAccessToken(email) {
     const payload = {
       email,
-      permission: this.constant.ACCESS_TYPE
+      permission: Constant.ACCESS_TYPE
     }
-    const timeout = this.constant.ACCESS_TOKEN_TIMEOUT;
-    const token = this.CryptUtil.generateJWT(payload, timeout);
+    const timeout = Constant.ACCESS_TOKEN_TIMEOUT;
+    const token = this.utils.CryptUtil.generateJWT(payload, timeout);
     return token;
   }
 
   generateRefreshToken(email) {
     const payload = {
       email,
-      permission: this.constant.REFRESH_TOKEN_TIMEOUT
+      permission: Constant.REFRESH_TYPE
     }
-    const timeout = this.constant.REFRESH_TYPE;
-    const token = this.CryptUtil.generateJWT(payload, timeout);
+    const timeout = Constant.REFRESH_TOKEN_TIMEOUT;
+    const token = this.utils.CryptUtil.generateJWT(payload, timeout);
     return token;
   }
 
@@ -68,8 +70,8 @@ class UserDelegator extends BaseDelegator {
 
   verifyRefreshToken(token){
     try {
-      const decodedUser = this.CryptUtil.verifyJWT(token);
-      if (decodedUser.permission !== this.constant.REFRESH_TYPE) {
+      const decodedUser = this.utils.CryptUtil.verifyJWT(token);
+      if (decodedUser.permission !== Constant.REFRESH_TYPE) {
         throw new Error("refresh token is invalid.")
       }
       return {
@@ -83,6 +85,10 @@ class UserDelegator extends BaseDelegator {
         message: error.message
       }
     }
+  }
+
+  comparePassword(password, hash){
+    return this.utils.CryptUtil.compareHash(password, hash);
   }
 }
 

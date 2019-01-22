@@ -1,47 +1,24 @@
-require('dotenv').config();
+require("./api/config/envconfig").config();
 const express = require('express');
-const session = require('express-session');
 const app = express();
-const bodyParser = require('body-parser');
-const RateLimit = require('express-rate-limit');
+
+const BodyParseMiddleware = require("./api/middleware/BodyParseMiddleware");
+const SessionMiddleware = require("./api/middleware/SessionMiddleware");
 const AuthMiddleware = require("./api/middleware/AuthMiddleware");
-const Logger = require('./utils/Logger');
+const CORSMiddleware = require("./api/middleware/CORSMiddleware");
+const RateLimitMiddleware = require("./api/middleware/RateLimitMiddleware");
+const LoggerMiddleware = require("./api/middleware/LoggerMiddleware");
 
-// CORS
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+const Logger = require("./api/provider/UtilProvider").Logger;
 
-// request rate limit
-const RateLimiter = new RateLimit({
-  windowMs: 1000,
-  max: 100,
-  delayMs: 0
-});
-app.use(RateLimiter);
-
-// parse request body
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-app.use(bodyParser.json());
-app.use(bodyParser.raw());
-
-// use session
-app.use(session({
-  name: "base-api",
-  secret: '123456',
-  cookie: {
-      maxAge: 60000
-  }
-}));
-
-// config request logging
-Logger.initRequestLogger(app);
+// apply middleware
+app.use(CORSMiddleware.cors);
+app.use(RateLimitMiddleware.RateLimiter);
+app.use(BodyParseMiddleware.urlencoded);
+app.use(BodyParseMiddleware.json);
+app.use(BodyParseMiddleware.raw);
+app.use(SessionMiddleware.session);
+app.use(LoggerMiddleware.requestLogging);
 
 // routes
 app.use("/v1",require('./api/routes/auth'));

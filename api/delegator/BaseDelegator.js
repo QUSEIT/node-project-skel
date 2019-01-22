@@ -1,11 +1,18 @@
-const BaseController = require("../controller/BaseController");
+// db models
+const User = require("../../db/models/user");
 
-class BaseDelegator extends BaseController{
+// utils
+const UtilProvider = require("../provider/UtilProvider");
+
+class BaseDelegator{
   constructor(props){
-    super(props);
 
+    this.db = {
+      User
+    }
+
+    this.utils = UtilProvider;
   }
-
 
 }
 

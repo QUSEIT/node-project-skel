@@ -1,23 +1,6 @@
-// all constants
-const constant = require("../constant");
-
-// db model
-const User = require("../../db/models/user");
-
-// validator schema
-const UserSchema = require("../schema/UserSchema");
-
-// response data
-const UserResponse = require("../response/UserResponse");
-
-// logger
-const Logger = require("../../utils/Logger");
-
-const Validator = require("../../utils/Velidator");
-
-const CryptUtil = require("../../utils/CryptUtil");
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
-const cryptUtil = new CryptUtil(TOKEN_SECRET);
+const UtilProvider = require("../provider/UtilProvider");
+const Logger = UtilProvider.Logger;
+const Validator = UtilProvider.Validator;
 
 /**
  * all route controller extends BaseController
@@ -25,24 +8,6 @@ const cryptUtil = new CryptUtil(TOKEN_SECRET);
 class BaseController {
 
   constructor(props) {
-    this.constant = constant;
-
-    this.db = {
-      User,
-    }
-
-    this.schema = {
-      UserSchema,
-    }
-
-    this.response = {
-      UserResponse,
-    }
-
-    this.logger = Logger;
-
-    this.CryptUtil = cryptUtil;
-
     this.error = this.error.bind(this);
     this.success = this.success.bind(this);
     this.reject = this.reject.bind(this);
@@ -66,7 +31,7 @@ class BaseController {
     } else {
       msg = error;
     }
-    this.logger.error(url, error);
+    Logger.error(url, error);
     Response.status(500).json({
       error: msg
     })
@@ -116,7 +81,7 @@ class BaseController {
    */
   reject(Request, Response, message, code=400) {
     const url = Request.originalUrl;
-    this.logger.warn(url, message);
+    Logger.warn(url, message);
     Response.status(code).json({
       error: message
     })

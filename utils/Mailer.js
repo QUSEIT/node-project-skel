@@ -1,5 +1,4 @@
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /**
  * 
@@ -46,7 +45,12 @@ function sendMulti(emails) {
   }))
 }
 
+function config(ApiKey){
+  sgMail.setApiKey(ApiKey);
+}
+
 module.exports = {
   sendSingle,
-  sendMulti
+  sendMulti,
+  config
 };

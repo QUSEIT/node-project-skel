@@ -1,5 +1,6 @@
 const BaseController = require("./BaseController");
 const UserDelegator = require("../delegator/UserDelegator");
+const UserResponse = require("../response/UserResponse");
 
 class UserController extends BaseController{
   constructor(props){
@@ -39,7 +40,7 @@ class UserController extends BaseController{
       if (!user) {
         this.reject(Request, Response, "user not found");
       }
-      if (!this.CryptUtil.compareHash(password, user.password)) {
+      if (!this.UserDelegator.comparePassword(password, user.password)) {
         this.reject(Request, Response, "email and password not match");
       }
       
@@ -73,7 +74,7 @@ class UserController extends BaseController{
       }
 
       const response = {
-        user: this.response.UserResponse.respondSingle(user)
+        user: UserResponse.respondSingle(user)
       };
       this.success(Request,Response, next, response);
     } catch (error) {
