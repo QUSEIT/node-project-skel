@@ -3,11 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "test": "mocha",
     "start": "node app.js",
     "start:docker": "./docker/development/run.sh api-base",
     "build:docker": "./docker/development/build.sh api-base",
     "stop:docker": "./docker/development/stop.sh api-base",
     "start:refs": "./docker/development/start-ref-services.sh"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
   },
   "dependencies": {
     "@sendgrid/mail": "^6.3.1",
